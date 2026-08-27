@@ -1,0 +1,232 @@
+{% import "_includes/forms.twig" as forms %}
+
+{% if unevaluable|length %}
+    <div class="readable">
+        <blockquote class="note warning">
+            <p>
+                {{ "These rules use features that need Bouncer Pro, so this installation cannot evaluate them. They are refusing everybody rather than letting everybody through — renew or upgrade to restore them."|t('bouncer') }}
+            </p>
+            <ul>
+                {% for rule in unevaluable %}
+                    <li><strong>{{ rule.name }}</strong> — {{ rule.proFeaturesUsed|join(', ') }}</li>
+                {% endfor %}
+            </ul>
+        </blockquote>
+    </div>
+{% endif %}
+
+{% if exposures|length %}
+    <div class="readable">
+        <blockquote class="note {{ plugin.exposure.hasCriticalExposure() ? 'error' : 'warning' }}">
+            <p>
+                {{ "Some protected files can still be fetched directly, which means the rules covering them are not being enforced on the files themselves."|t('bouncer') }}
+                <a href="{{ url('bouncer/exposure') }}">{{ "See what to do about it"|t('bouncer') }} &rarr;</a>
+            </p>
+        </blockquote>
+    </div>
+{% endif %}
+
+<h2>{{ "Enforcement"|t('bouncer') }}</h2>
+
+{{ forms.lightswitchField({
+    label: "Guard front-end requests"|t('bouncer'),
+    instructions: "Refuse page requests for protected content. Turn this off to stage rules without enforcing them yet — and turn it off first if a rule has locked you out."|t('bouncer'),
+    id: 'enforceRequests',
+    name: 'enforceRequests',
+    on: settings.enforceRequests,
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Filter element queries"|t('bouncer'),
+    instructions: "Keep protected elements out of listings, search results, feeds, sitemaps and GraphQL responses. Without this, a protected entry’s title and excerpt still appear everywhere it is listed."|t('bouncer'),
+    id: 'filterQueries',
+    name: 'filterQueries',
+    on: settings.filterQueries,
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Filter control panel queries"|t('bouncer'),
+    instructions: "Not recommended. The control panel has its own permissions, and hiding entries from the authors who edit them causes more confusion than it prevents."|t('bouncer'),
+    id: 'filterCpQueries',
+    name: 'filterCpQueries',
+    on: settings.filterCpQueries,
+}) }}
+
+<hr>
+
+<h2>{{ "Exemptions"|t('bouncer') }}</h2>
+
+{{ forms.lightswitchField({
+    label: "Admins are exempt"|t('bouncer'),
+    instructions: "Admin accounts are never refused."|t('bouncer'),
+    id: 'exemptAdmins',
+    name: 'exemptAdmins',
+    on: settings.exemptAdmins,
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Control panel users are exempt"|t('bouncer'),
+    instructions: "Anybody who can log into the control panel is never refused. That is a much wider group than it looks — leave this off unless you mean it."|t('bouncer'),
+    id: 'exemptCpUsers',
+    name: 'exemptCpUsers',
+    on: settings.exemptCpUsers,
+}) }}
+
+<hr>
+
+<h2>{{ "Files"|t('bouncer') }}{% if not isPro %} <span class="light">({{ "Pro"|t('bouncer') }})</span>{% endif %}</h2>
+
+{{ forms.lightswitchField({
+    label: "Guard asset URLs"|t('bouncer'),
+    instructions: "Rewrite protected assets’ URLs so the files are served through Bouncer instead of directly. Without this, an asset rule hides the asset from queries and does nothing at all about the file."|t('bouncer'),
+    id: 'guardAssetUrls',
+    name: 'guardAssetUrls',
+    on: settings.guardAssetUrls,
+    disabled: not isPro,
+}) }}
+
+{{ forms.textField({
+    label: "File route URI"|t('bouncer'),
+    instructions: "Where guarded files are served from."|t('bouncer'),
+    id: 'fileRouteUri',
+    name: 'fileRouteUri',
+    value: settings.fileRouteUri,
+    disabled: not isPro,
+}) }}
+
+{{ forms.textField({
+    label: "Signed URL lifetime"|t('bouncer'),
+    instructions: "How long a link made with `craft.bouncer.signedUrl()` stays valid, in seconds."|t('bouncer'),
+    id: 'signedUrlDuration',
+    name: 'signedUrlDuration',
+    value: settings.signedUrlDuration,
+    type: 'number',
+    disabled: not isPro,
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Force download"|t('bouncer'),
+    instructions: "Send every protected file as a download rather than letting the browser display it. Files that could run script in your origin are always sent as downloads whatever this says."|t('bouncer'),
+    id: 'forceDownload',
+    name: 'forceDownload',
+    on: settings.forceDownload,
+    disabled: not isPro,
+}) }}
+
+{{ forms.selectField({
+    label: "File delivery method"|t('bouncer'),
+    instructions: "Hand large files to the web server instead of streaming them through PHP. Both options need the server configured with an **internal** location — get that wrong and the hand-off becomes a public URL."|t('bouncer'),
+    id: 'fileDeliveryMethod',
+    name: 'fileDeliveryMethod',
+    options: {
+        '': "Stream through PHP (always works)"|t('bouncer'),
+        'x-accel-redirect': 'X-Accel-Redirect (nginx)',
+        'x-sendfile': 'X-Sendfile (Apache, mod_xsendfile)',
+    },
+    value: settings.fileDeliveryMethod,
+    disabled: not isPro,
+}) }}
+
+{{ forms.editableTableField({
+    label: "Internal path map"|t('bouncer'),
+    instructions: "Maps a filesystem path to the internal location your web server exposes it at. Only used by the hand-off methods above."|t('bouncer'),
+    id: 'internalPathMap',
+    name: 'internalPathMap',
+    cols: {
+        path: { heading: "Filesystem path"|t('bouncer'), type: 'singleline', width: 300 },
+        location: { heading: "Internal location"|t('bouncer'), type: 'singleline' },
+    },
+    rows: settings.internalPathMap,
+    addRowLabel: "Add a mapping"|t('bouncer'),
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: false,
+    static: not isPro,
+}) }}
+
+<hr>
+
+<h2>{{ "Passwords"|t('bouncer') }}{% if not isPro %} <span class="light">({{ "Pro"|t('bouncer') }})</span>{% endif %}</h2>
+
+{{ forms.textField({
+    label: "Password template"|t('bouncer'),
+    instructions: "A site template to render for the password prompt. Leave empty to use the one Bouncer ships."|t('bouncer'),
+    id: 'passwordTemplate',
+    name: 'passwordTemplate',
+    value: settings.passwordTemplate,
+    disabled: not isPro,
+}) }}
+
+{{ forms.textField({
+    label: "Password attempts"|t('bouncer'),
+    instructions: "Failed attempts allowed per IP address per rule before the gate stops answering. Zero removes the limit, which is not advisable on a public URL."|t('bouncer'),
+    id: 'passwordAttempts',
+    name: 'passwordAttempts',
+    value: settings.passwordAttempts,
+    type: 'number',
+    disabled: not isPro,
+}) }}
+
+{{ forms.textField({
+    label: "Attempt window"|t('bouncer'),
+    instructions: "How long the attempt count is remembered, in seconds."|t('bouncer'),
+    id: 'passwordAttemptWindow',
+    name: 'passwordAttemptWindow',
+    value: settings.passwordAttemptWindow,
+    type: 'number',
+    disabled: not isPro,
+}) }}
+
+<hr>
+
+<h2>{{ "Log"|t('bouncer') }}{% if not isPro %} <span class="light">({{ "Pro"|t('bouncer') }})</span>{% endif %}</h2>
+
+{{ forms.lightswitchField({
+    label: "Log refusals"|t('bouncer'),
+    instructions: "Record every request a rule refused."|t('bouncer'),
+    id: 'logDenials',
+    name: 'logDenials',
+    on: settings.logDenials,
+    disabled: not isPro,
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Log allowed requests too"|t('bouncer'),
+    instructions: "Noisy, and occasionally exactly what you need."|t('bouncer'),
+    id: 'logAllowed',
+    name: 'logAllowed',
+    on: settings.logAllowed,
+    disabled: not isPro,
+}) }}
+
+{{ forms.textField({
+    label: "Log retention"|t('bouncer'),
+    instructions: "Days of log kept. Older entries are removed by Craft’s garbage collection."|t('bouncer'),
+    id: 'logRetentionDays',
+    name: 'logRetentionDays',
+    value: settings.logRetentionDays,
+    type: 'number',
+    disabled: not isPro,
+}) }}
+
+<hr>
+
+<h2>{{ "Advanced"|t('bouncer') }}</h2>
+
+{{ forms.textField({
+    label: "Condition ID cap"|t('bouncer'),
+    instructions: "Rules that use an element condition are filtered out of listings by resolving which elements they match. Past this many, the rule stops filtering queries and says so in the logs, rather than filtering a truncated list."|t('bouncer'),
+    id: 'conditionIdCap',
+    name: 'conditionIdCap',
+    value: settings.conditionIdCap,
+    type: 'number',
+}) }}
+
+{{ forms.textField({
+    label: "Condition cache duration"|t('bouncer'),
+    instructions: "How long those resolved IDs are cached, in seconds."|t('bouncer'),
+    id: 'conditionCacheDuration',
+    name: 'conditionCacheDuration',
+    value: settings.conditionCacheDuration,
+    type: 'number',
+}) }}

@@ -1,0 +1,338 @@
+{% extends "_layouts/cp.twig" %}
+{% import "_includes/forms.twig" as forms %}
+
+{% set title = isNew ? "New access rule"|t('bouncer') : rule.name %}
+{% set crumbs = [
+    { label: "Bouncer"|t('bouncer'), url: url('bouncer/rules') },
+    { label: "Rules"|t('bouncer'), url: url('bouncer/rules') },
+] %}
+
+{% set fullPageForm = true %}
+
+{% block content %}
+    <input type="hidden" name="action" value="bouncer/rules/save">
+    <input type="hidden" name="ruleId" value="{{ rule.id }}">
+    {{ redirectInput('bouncer/rules') }}
+
+    {{ forms.textField({
+        first: true,
+        label: "Name"|t('app'),
+        id: 'name',
+        name: 'name',
+        value: rule.name,
+        errors: rule.getErrors('name'),
+        autofocus: true,
+        required: true,
+    }) }}
+
+    {{ forms.textField({
+        label: "Handle"|t('app'),
+        instructions: "Used to reference this rule from templates, e.g. `craft.bouncer.can('@subscribers')`."|t('bouncer'),
+        id: 'handle',
+        name: 'handle',
+        class: 'code',
+        value: rule.handle,
+        errors: rule.getErrors('handle'),
+        required: true,
+    }) }}
+
+    <hr>
+
+    <h2>{{ "What it protects"|t('bouncer') }}</h2>
+
+    {{ forms.selectField({
+        label: "Target"|t('bouncer'),
+        id: 'target-type',
+        name: 'target[type]',
+        options: targetTypeOptions,
+        value: rule.target.type,
+        errors: rule.getErrors('target.type'),
+        toggle: true,
+        targetPrefix: '.bouncer-target-',
+    }) }}
+
+    {% for type in ['entries', 'categories', 'assets'] %}
+        <div id="bouncer-target-{{ type }}" class="bouncer-target-{{ type }} {{ rule.target.type == type ? '' : 'hidden' }}">
+            {{ forms.lightswitchField({
+                label: "Protect every source"|t('bouncer'),
+                instructions: "Including ones added later."|t('bouncer'),
+                id: 'all-sources-' ~ type,
+                name: 'target[allSources]',
+                on: rule.target.allSources,
+            }) }}
+
+            {{ forms.checkboxSelectField({
+                label: "Sources"|t('bouncer'),
+                id: 'sources-' ~ type,
+                name: 'target[sourceUids]',
+                options: sourceOptions[type] ?? [],
+                values: rule.target.sourceUids,
+                errors: rule.getErrors('target.sourceUids'),
+                showAllOption: false,
+            }) }}
+
+            {% if type == 'entries' %}
+                {{ forms.checkboxSelectField({
+                    label: "Entry types"|t('bouncer'),
+                    instructions: "Leave all unchecked to cover every entry type."|t('bouncer'),
+                    id: 'entry-types',
+                    name: 'target[entryTypeUids]',
+                    options: entryTypeOptions,
+                    values: rule.target.entryTypeUids,
+                    showAllOption: false,
+                }) }}
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    <div id="bouncer-target-uri" class="bouncer-target-uri {{ rule.target.type == 'uri' ? '' : 'hidden' }}">
+        {{ forms.editableTableField({
+            label: "URI patterns"|t('bouncer'),
+            instructions: "`*` matches within a path segment, `**` matches across them, and `members/**` also covers `members` itself. Use `__home__` for the home page."|t('bouncer'),
+            id: 'uri-patterns',
+            name: 'target[uriPatterns]',
+            cols: {
+                pattern: { heading: "Pattern"|t('bouncer'), type: 'singleline', code: true },
+            },
+            rows: rule.target.uriPatterns|map(p => { pattern: p }),
+            errors: rule.getErrors('target.uriPatterns'),
+            addRowLabel: "Add a pattern"|t('bouncer'),
+            allowAdd: true,
+            allowDelete: true,
+            allowReorder: true,
+        }) }}
+    </div>
+
+    {% if condition is not null %}
+        <div id="bouncer-condition-wrapper" class="bouncer-target-entries bouncer-target-categories bouncer-target-assets {{ rule.target.type == 'uri' ? 'hidden' : '' }}">
+            {{ forms.lightswitchField({
+                label: "Narrow with a condition"|t('bouncer'),
+                instructions: isPro
+                    ? "Protect only the elements in those sources that match a condition — a field value, an author, a date."|t('bouncer')
+                    : "Needs Bouncer Pro."|t('bouncer'),
+                id: 'use-condition',
+                name: 'target[useCondition]',
+                on: rule.target.condition is not null,
+                disabled: not isPro,
+                toggle: '#bouncer-condition-field',
+            }) }}
+
+            <div id="bouncer-condition-field" class="{{ rule.target.condition is not null ? '' : 'hidden' }}">
+                {{ forms.field({ label: "Condition"|t('bouncer') }, condition.getBuilderHtml()|raw) }}
+            </div>
+        </div>
+    {% endif %}
+
+    <hr>
+
+    <h2>{{ "Who gets through"|t('bouncer') }}</h2>
+
+    <p class="light">{{ "Every requirement below has to be met. A visitor who fails any one of them is refused."|t('bouncer') }}</p>
+
+    {% if rule.getErrors('access')|length %}
+        <ul class="errors">
+            {% for error in rule.getErrors('access') %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    {{ forms.lightswitchField({
+        label: "Require being logged in"|t('bouncer'),
+        id: 'require-login',
+        name: 'access[requireLogin]',
+        on: rule.access.requireLogin,
+    }) }}
+
+    {{ forms.checkboxSelectField({
+        label: "User groups"|t('bouncer'),
+        id: 'user-groups',
+        name: 'access[userGroupUids]',
+        options: userGroupOptions,
+        values: rule.access.userGroupUids,
+        showAllOption: false,
+    }) }}
+
+    {{ forms.selectField({
+        label: "Group match"|t('bouncer'),
+        instructions: "The one place Bouncer offers “any”. Everything else is “all”."|t('bouncer'),
+        id: 'group-match',
+        name: 'access[groupMatch]',
+        options: {
+            any: "In any of the groups"|t('bouncer'),
+            all: "In all of the groups"|t('bouncer'),
+        },
+        value: rule.access.groupMatch,
+    }) }}
+
+    {{ forms.multiselectField({
+        label: "Permissions"|t('bouncer'),
+        instructions: "Craft permissions the visitor must hold."|t('bouncer'),
+        id: 'permissions',
+        name: 'access[permissions]',
+        options: permissionOptions,
+        values: rule.access.permissions,
+    }) }}
+
+    <h3>{{ "Password"|t('bouncer') }}{% if not isPro %} <span class="light">({{ "Pro"|t('bouncer') }})</span>{% endif %}</h3>
+
+    {{ forms.passwordField({
+        label: "Shared password"|t('bouncer'),
+        instructions: rule.access.hasPassword
+            ? "A password is set. Leave this empty to keep it, or type a new one to replace it."|t('bouncer')
+            : "Unlocks the content for a session without an account. You can also enter an environment variable name like `$MEMBERS_PASSWORD`."|t('bouncer'),
+        id: 'password',
+        name: 'access[password]',
+        value: '',
+        disabled: not isPro,
+    }) }}
+
+    {% if rule.access.hasPassword %}
+        {{ forms.checkboxField({
+            label: "Remove the password"|t('bouncer'),
+            id: 'remove-password',
+            name: 'access[removePassword]',
+            disabled: not isPro,
+        }) }}
+    {% endif %}
+
+    {{ forms.textField({
+        label: "Unlock lasts"|t('bouncer'),
+        instructions: "Seconds. Zero means until the browser session ends."|t('bouncer'),
+        id: 'password-duration',
+        name: 'access[passwordDuration]',
+        value: rule.access.passwordDuration,
+        type: 'number',
+        disabled: not isPro,
+    }) }}
+
+    <h3>{{ "Date window"|t('bouncer') }}{% if not isPro %} <span class="light">({{ "Pro"|t('bouncer') }})</span>{% endif %}</h3>
+
+    {{ forms.dateTimeField({
+        label: "Available from"|t('bouncer'),
+        id: 'start-date',
+        name: 'access[startDate]',
+        value: rule.access.startDate,
+        errors: rule.getErrors('access.startDate'),
+        disabled: not isPro,
+    }) }}
+
+    {{ forms.dateTimeField({
+        label: "Available until"|t('bouncer'),
+        id: 'end-date',
+        name: 'access[endDate]',
+        value: rule.access.endDate,
+        errors: rule.getErrors('access.endDate'),
+        disabled: not isPro,
+    }) }}
+
+    <h3>{{ "IP rules"|t('bouncer') }}{% if not isPro %} <span class="light">({{ "Pro"|t('bouncer') }})</span>{% endif %}</h3>
+
+    {{ forms.selectField({
+        label: "IP mode"|t('bouncer'),
+        id: 'ip-mode',
+        name: 'access[ipMode]',
+        options: {
+            off: "Off"|t('bouncer'),
+            allow: "Only these addresses"|t('bouncer'),
+            deny: "Everybody except these addresses"|t('bouncer'),
+        },
+        value: rule.access.ipMode,
+        disabled: not isPro,
+    }) }}
+
+    {{ forms.editableTableField({
+        label: "Addresses"|t('bouncer'),
+        instructions: "IPv4 or IPv6 addresses, or CIDR ranges like `10.0.0.0/8`."|t('bouncer'),
+        id: 'ips',
+        name: 'access[ips]',
+        cols: {
+            ip: { heading: "Address or range"|t('bouncer'), type: 'singleline', code: true },
+        },
+        rows: rule.access.ips|map(ip => { ip: ip }),
+        errors: rule.getErrors('access.ips'),
+        addRowLabel: "Add an address"|t('bouncer'),
+        allowAdd: true,
+        allowDelete: true,
+        static: not isPro,
+    }) }}
+
+    <hr>
+
+    <h2>{{ "What a refused visitor gets"|t('bouncer') }}</h2>
+
+    {{ forms.selectField({
+        label: "Response"|t('bouncer'),
+        id: 'response-type',
+        name: 'response[type]',
+        options: responseTypeOptions,
+        value: rule.response.type,
+        errors: rule.getErrors('response.type'),
+        toggle: true,
+        targetPrefix: '.bouncer-response-',
+    }) }}
+
+    <div class="bouncer-response-redirect {{ rule.response.type == 'redirect' ? '' : 'hidden' }}">
+        {{ forms.textField({
+            label: "Redirect to"|t('bouncer'),
+            id: 'redirect-url',
+            name: 'response[redirectUrl]',
+            value: rule.response.redirectUrl,
+            errors: rule.getErrors('response.redirectUrl'),
+        }) }}
+    </div>
+
+    <div class="bouncer-response-template {{ rule.response.type == 'template' ? '' : 'hidden' }}">
+        {{ forms.textField({
+            label: "Template"|t('bouncer'),
+            instructions: "Rendered in place, with `verdict`, `rule`, `reason` and `element` available."|t('bouncer'),
+            id: 'response-template',
+            name: 'response[template]',
+            class: 'code',
+            value: rule.response.template,
+            errors: rule.getErrors('response.template'),
+        }) }}
+    </div>
+
+    {{ forms.textareaField({
+        label: "Message"|t('bouncer'),
+        instructions: "Shown to the refused visitor. “Subscribers only” and “this event has finished” are both refusals, and neither message works for the other."|t('bouncer'),
+        id: 'response-message',
+        name: 'response[message]',
+        value: rule.response.message,
+        rows: 2,
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: "Keep the URL"|t('bouncer'),
+        instructions: "Render in place instead of redirecting."|t('bouncer'),
+        id: 'preserve-url',
+        name: 'response[preserveUrl]',
+        on: rule.response.preserveUrl,
+    }) }}
+
+    <hr>
+
+    {{ forms.lightswitchField({
+        label: "Enabled"|t('app'),
+        id: 'enabled',
+        name: 'enabled',
+        on: rule.enabled,
+    }) }}
+
+    {% if craft.app.isMultiSite %}
+        {{ forms.checkboxSelectField({
+            label: "Sites"|t('app'),
+            instructions: "Leave all unchecked to apply to every site."|t('bouncer'),
+            id: 'sites',
+            name: 'siteUids',
+            options: siteOptions,
+            values: rule.siteUids,
+            showAllOption: false,
+        }) }}
+    {% endif %}
+{% endblock %}
+
+{% if isNew %}
+    {% js %}
+        new Craft.HandleGenerator('#name', '#handle');
+    {% endjs %}
+{% endif %}

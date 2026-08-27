@@ -1,0 +1,64 @@
+{% extends "_layouts/cp.twig" %}
+
+{% set title = "Protected files"|t('bouncer') %}
+{% set crumbs = [{ label: "Bouncer"|t('bouncer'), url: url('bouncer/rules') }] %}
+
+{% block content %}
+    <div class="readable">
+        <p>
+            {{ "Rewriting a protected asset’s URL only helps if the file cannot still be fetched at its original one. This screen checks the filesystems behind every volume Bouncer protects, and says what to do about anything it finds."|t('bouncer') }}
+        </p>
+    </div>
+
+    {% if reports|length == 0 %}
+        <div class="zilch">
+            <p>{{ "No rules protect any assets yet."|t('bouncer') }}</p>
+        </div>
+    {% endif %}
+
+    {% for index, report in reports %}
+        <div class="pane">
+            <h2>
+                {% if report.isCritical %}
+                    <span class="status red"></span>
+                {% elseif report.isExposed %}
+                    <span class="status orange"></span>
+                {% else %}
+                    <span class="status green"></span>
+                {% endif %}
+                {{ report.volume.name }}
+            </h2>
+
+            <p class="light">
+                {{ "Filesystem"|t('bouncer') }}: <code>{{ report.fsHandle ?? '—' }}</code>
+                &nbsp;·&nbsp;
+                {{ "Transforms"|t('bouncer') }}: <code>{{ report.transformFsHandle ?? report.fsHandle ?? '—' }}</code>
+                &nbsp;·&nbsp;
+                {{ "Protected by"|t('bouncer') }}: {{ report.rules|map(r => r.name)|join(', ') }}
+            </p>
+
+            <ul class="bullets">
+                {% for finding in report.findings %}
+                    <li>{{ finding }}</li>
+                {% endfor %}
+            </ul>
+
+            {% if report.remedies|length %}
+                <h3>{{ "What to do"|t('bouncer') }}</h3>
+                <ol>
+                    {% for remedy in report.remedies %}
+                        <li>{{ remedy }}</li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+
+            {% if snippets[index].apache %}
+                <h3>{{ "Apache"|t('bouncer') }}</h3>
+                <pre class="code">{{ snippets[index].apache }}</pre>
+
+                <h3>{{ "nginx"|t('bouncer') }}</h3>
+                <pre class="code">{{ snippets[index].nginx }}</pre>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endblock %}

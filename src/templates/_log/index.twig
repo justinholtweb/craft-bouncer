@@ -1,0 +1,62 @@
+{% extends "_layouts/cp.twig" %}
+
+{% set title = "Access log"|t('bouncer') %}
+{% set crumbs = [{ label: "Bouncer"|t('bouncer'), url: url('bouncer/rules') }] %}
+
+{% block actionButton %}
+    <form method="post" accept-charset="UTF-8">
+        {{ csrfInput() }}
+        <input type="hidden" name="action" value="bouncer/log/clear">
+        <button type="submit" class="btn">{{ "Clear the log"|t('bouncer') }}</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+    {% if not enabled %}
+        <blockquote class="note">
+            <p>{{ "Logging is switched off, so nothing new is being recorded."|t('bouncer') }}
+                <a href="{{ url('settings/plugins/bouncer') }}">{{ "Settings"|t('bouncer') }} &rarr;</a></p>
+        </blockquote>
+    {% endif %}
+
+    {% if rows|length %}
+        <table class="data fullwidth">
+            <thead>
+                <tr>
+                    <th scope="col">{{ "When"|t('bouncer') }}</th>
+                    <th scope="col">{{ "Outcome"|t('bouncer') }}</th>
+                    <th scope="col">{{ "Rule"|t('bouncer') }}</th>
+                    <th scope="col">{{ "Reason"|t('bouncer') }}</th>
+                    <th scope="col">{{ "User"|t('bouncer') }}</th>
+                    <th scope="col">{{ "URI"|t('bouncer') }}</th>
+                    <th scope="col">{{ "IP"|t('bouncer') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td class="nowrap">{{ row.dateCreated }}</td>
+                        <td>
+                            <span class="status {{ row.outcome == 'denied' ? 'red' : (row.outcome == 'unlocked' ? 'orange' : 'green') }}"></span>
+                            {{ row.outcome }}
+                        </td>
+                        <td>{{ row.ruleName ?? '—' }}</td>
+                        <td>{{ row.reason ?? '—' }}</td>
+                        <td>{{ row.username ?? "anonymous"|t('bouncer') }}</td>
+                        <td class="code">{{ row.uri }}</td>
+                        <td class="code">{{ row.ip }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if total > pageSize %}
+            <div class="pagination">
+                {% if page > 1 %}<a class="btn" href="{{ url('bouncer/log', { page: page - 1 }) }}">{{ "Previous"|t('app') }}</a>{% endif %}
+                {% if page * pageSize < total %}<a class="btn" href="{{ url('bouncer/log', { page: page + 1 }) }}">{{ "Next"|t('app') }}</a>{% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="zilch"><p>{{ "Nothing logged yet."|t('bouncer') }}</p></div>
+    {% endif %}
+{% endblock %}

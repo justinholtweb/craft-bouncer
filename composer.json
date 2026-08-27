@@ -1,0 +1,62 @@
+{
+    "name": "justinholtweb/craft-bouncer",
+    "description": "Access rules for Craft CMS — protect sections, entries, categories, URIs and asset files behind login, user groups, permissions, passwords, date windows and IP rules, with a guarded file delivery route so protected uploads cannot be fetched directly.",
+    "version": "5.0.0",
+    "type": "craft-plugin",
+    "keywords": [
+        "craftcms",
+        "craft-plugin",
+        "access-control",
+        "content-gating",
+        "membership",
+        "paywall",
+        "protected-files",
+        "permissions",
+        "private-assets"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Justin Holt",
+            "homepage": "https://justinholt.com"
+        }
+    ],
+    "support": {
+        "email": "justin@justinholt.com",
+        "issues": "https://github.com/justinholtweb/craft-bouncer/issues"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.2",
+        "ext-json": "*",
+        "craftcms/cms": "^5.3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "justinholtweb\\bouncer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "justinholtweb\\bouncer\\tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "craftcms/plugin-installer": true,
+            "yiisoft/yii2-composer": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "name": "Bouncer",
+        "handle": "bouncer",
+        "developer": "Justin Holt",
+        "developerUrl": "https://justinholt.com",
+        "documentationUrl": "https://github.com/justinholtweb/craft-bouncer/blob/main/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/justinholtweb/craft-bouncer/main/CHANGELOG.md",
+        "class": "justinholtweb\\bouncer\\Plugin",
+        "editions": ["lite", "pro"]
+    }
+}

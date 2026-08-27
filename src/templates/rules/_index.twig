@@ -1,0 +1,101 @@
+{% extends "_layouts/cp.twig" %}
+{% import "_includes/forms.twig" as forms %}
+
+{% set title = "Access rules"|t('bouncer') %}
+{% set fullPageForm = false %}
+
+{% block actionButton %}
+    <a href="{{ url('bouncer/rules/new') }}" class="btn submit add icon">{{ "New rule"|t('bouncer') }}</a>
+{% endblock %}
+
+{% block content %}
+    {% if unevaluable|length %}
+        <blockquote class="note warning">
+            <p>
+                {{ "{count} rule(s) use features that need Bouncer Pro. They are refusing everybody rather than letting everybody through."|t('bouncer', { count: unevaluable|length }) }}
+            </p>
+        </blockquote>
+    {% endif %}
+
+    {% if rules|length %}
+        <table id="bouncer-rules" class="data fullwidth">
+            <thead>
+                <tr>
+                    <th scope="col">{{ "Rule"|t('bouncer') }}</th>
+                    <th scope="col">{{ "Protects"|t('bouncer') }}</th>
+                    <th scope="col">{{ "Requires"|t('bouncer') }}</th>
+                    <th scope="col">{{ "Refusal"|t('bouncer') }}</th>
+                    <th scope="col" class="thin"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rule in rules %}
+                    {% set access = rule.access %}
+                    <tr data-id="{{ rule.id }}" data-name="{{ rule.name }}">
+                        <td>
+                            <a href="{{ url('bouncer/rules/' ~ rule.id) }}"><strong>{{ rule.name }}</strong></a>
+                            <div class="light code">{{ rule.handle }}</div>
+                            {% if not rule.enabled %}
+                                <span class="status off"></span> <span class="light">{{ "Disabled"|t('bouncer') }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ rule.target.type|capitalize }}
+                            {%- if rule.target.type == 'uri' %}
+                                <div class="light code">{{ rule.target.uriPatterns|join(', ') }}</div>
+                            {% elseif rule.target.allSources %}
+                                <div class="light">{{ "All sources"|t('bouncer') }}</div>
+                            {% else %}
+                                <div class="light">{{ "{count} source(s)"|t('bouncer', { count: rule.target.sourceUids|length }) }}</div>
+                            {% endif %}
+                            {% if rule.target.condition %}<div class="light">{{ "+ condition"|t('bouncer') }}</div>{% endif %}
+                        </td>
+                        <td>
+                            <ul>
+                                {% if access.requireLogin %}<li>{{ "Being logged in"|t('bouncer') }}</li>{% endif %}
+                                {% if access.userGroupUids|length %}<li>{{ "{count} user group(s)"|t('bouncer', { count: access.userGroupUids|length }) }} ({{ access.groupMatch }})</li>{% endif %}
+                                {% if access.permissions|length %}<li>{{ "{count} permission(s)"|t('bouncer', { count: access.permissions|length }) }}</li>{% endif %}
+                                {% if access.hasPassword %}<li>{{ "A password"|t('bouncer') }}</li>{% endif %}
+                                {% if access.hasDateWindow %}<li>{{ "A date window"|t('bouncer') }}</li>{% endif %}
+                                {% if access.hasIpRules %}<li>{{ "IP rules"|t('bouncer') }}</li>{% endif %}
+                            </ul>
+                        </td>
+                        <td>{{ rule.response.type }}</td>
+                        <td class="thin">
+                            <button type="button" class="delete icon bouncer-delete" title="{{ 'Delete'|t('app') }}" data-id="{{ rule.id }}"></button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="zilch">
+            <p>{{ "No access rules yet. Everything on this site is public."|t('bouncer') }}</p>
+            <a href="{{ url('bouncer/rules/new') }}" class="btn submit">{{ "Create the first rule"|t('bouncer') }}</a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% js %}
+// A nested <form> in a CP template does not just fail — it corrupts the page form, so the delete
+// posts over Ajax instead. See the family notes in CLAUDE.md.
+document.querySelectorAll('.bouncer-delete').forEach(function(button) {
+    button.addEventListener('click', function() {
+        var row = button.closest('tr');
+        var name = row ? row.getAttribute('data-name') : '';
+
+        if (!confirm(Craft.t('bouncer', 'Delete the “{name}” rule? Anything it protects becomes public.', { name: name }))) {
+            return;
+        }
+
+        Craft.sendActionRequest('POST', 'bouncer/rules/delete', { data: { id: button.getAttribute('data-id') } })
+            .then(function() {
+                row.parentNode.removeChild(row);
+                Craft.cp.displayNotice(Craft.t('bouncer', 'Rule deleted.'));
+            })
+            .catch(function() {
+                Craft.cp.displayError(Craft.t('bouncer', 'Couldn’t delete the rule.'));
+            });
+    });
+});
+{% endjs %}

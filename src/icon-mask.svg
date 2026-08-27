@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Two stanchions and the rope between them: the least ambiguous picture of "you may not
+         come in here" that does not involve a padlock, which every other plugin already uses. -->
+    <line x1="22" y1="34" x2="22" y2="86"/>
+    <line x1="78" y1="34" x2="78" y2="86"/>
+    <line x1="10" y1="90" x2="34" y2="90"/>
+    <line x1="66" y1="90" x2="90" y2="90"/>
+    <circle cx="22" cy="24" r="9" fill="currentColor" stroke="none"/>
+    <circle cx="78" cy="24" r="9" fill="currentColor" stroke="none"/>
+    <path d="M22 34 C 34 60, 66 60, 78 34" stroke-width="8"/>
+</svg>
