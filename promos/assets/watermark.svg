@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Control-panel nav mask: the bouncer and his rope on their own, black on transparent, no tile.
+  Slide watermark: the bouncer and his rope, filled white, no tile. Copied from
+  ../src/icon-mask.svg — same ten paths, same transform, only the fill differs. Change the icon and
+  change all three of src/icon.svg, src/icon-mask.svg and this.
 
-  The geometry is lifted verbatim from src/icon.svg — these are the ten paths it fills in #ffffff,
-  which is to say everything that is not the purple tile. p0 and p1 (the tile itself, which carries
-  these ten as holes) are deliberately left out.
-
-  **No stroke.** The icon welds the shapes together with a 10pt stroke; carried over here it closes
-  the gap between the figure's arms and the rope and fuses the stanchions into their posts, which
-  at 18px reads as one dark lump. The fills alone keep the rope, the arms and the posts apart.
-
-  The transform maps the fill-only bounds (52.19, 48.74, 179.47 x 184.01 in the icon's own frame)
-  into a 92-unit box centred in 100x100. That is fuller than the rope-and-stanchions mask this
-  replaces, which only ever spanned 80x75 — but that one was two posts and a line, and this one has
-  to hold a figure, so it needs the extra size to survive the sidebar.
+  Filled rather than stroked, unlike the line-drawing marks in the family. This mark is already a
+  silhouette; outlining it would trace the gap between every muscle and read as noise at 1150px.
+  The cost is that it goes heavy fast, so the deck runs it at **opacity 0.022**, not the 0.05 a
+  stroked mark takes — the same correction Bird's deck needed for the same reason. At 0.05 the
+  figure reads as a grey man standing in the left third of every slide.
 -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-    <title>Bouncer</title>
-    <g transform="translate(-20.960 -20.367) scale(0.49998)" fill="#000000">
+        <g transform="translate(-20.960 -20.367) scale(0.49998)" fill="#ffffff">
         <path d="M 139.56 49.03 C 147.98 47.27 157.26 53.62 157.92 62.40 C 159.57 71.02 153.92 78.95 145.59 81.04 C 136.37 83.38 127.01 75.09 126.47 66.02 C 125.64 58.22 132.06 50.55 139.56 49.03 Z"/>
         <path d="M 100.15 54.08 C 105.23 56.36 105.89 63.10 101.55 66.45 C 98.62 69.06 94.24 67.23 90.73 67.07 C 89.21 73.40 89.67 79.82 87.64 86.08 C 90.51 85.29 93.00 84.17 96.01 84.32 C 98.71 84.40 101.43 86.00 104.09 86.62 C 107.32 85.93 110.63 83.60 113.95 83.52 C 117.46 83.64 120.95 86.11 124.36 86.78 C 127.57 86.69 130.69 84.90 133.88 84.57 C 136.88 84.86 139.88 86.12 142.89 86.17 C 147.10 85.52 150.71 83.94 155.07 84.89 C 154.17 88.91 153.32 92.96 152.25 96.94 C 151.56 99.64 149.26 101.62 148.48 104.21 C 148.22 109.22 148.52 114.30 148.58 119.33 C 153.18 119.43 157.77 119.39 162.36 119.35 C 162.45 113.46 162.44 107.58 162.39 101.69 C 160.29 100.96 158.18 100.25 156.08 99.51 C 156.46 95.72 157.24 92.01 157.92 88.26 C 162.59 87.16 167.19 83.91 171.90 84.36 C 175.22 84.42 177.89 85.77 180.90 86.96 C 182.95 86.00 185.15 84.68 187.40 84.36 C 190.44 83.99 193.72 85.31 196.65 86.05 C 195.61 79.63 195.33 73.21 193.65 66.89 C 191.23 67.33 188.75 68.28 186.28 68.31 C 184.63 67.60 183.09 66.54 181.81 65.26 C 179.78 63.60 180.20 59.90 180.73 57.63 C 182.27 55.35 185.14 53.03 188.05 53.37 C 193.21 53.61 198.35 56.31 201.43 60.49 C 205.30 65.59 208.87 71.24 211.97 76.84 C 214.66 81.70 215.50 86.88 216.50 92.27 C 217.61 95.92 215.50 100.27 212.39 102.27 C 206.53 106.35 199.93 109.45 192.96 111.06 C 187.66 112.27 181.89 111.20 176.56 110.66 C 175.37 113.84 174.23 117.08 172.78 120.15 C 170.73 124.56 167.55 127.71 166.11 132.47 C 164.51 137.93 163.79 143.69 163.35 149.35 C 159.20 149.57 155.16 150.43 150.99 150.45 C 143.98 150.51 136.95 150.48 129.94 150.34 C 126.93 150.12 123.58 149.77 120.88 148.33 C 120.20 144.14 120.80 139.96 119.63 135.74 C 118.36 130.53 115.37 126.89 112.97 122.24 C 110.91 118.33 109.51 114.29 107.70 110.25 C 103.83 110.96 99.32 112.61 95.42 111.73 C 87.52 110.38 79.88 107.10 73.19 102.72 C 70.30 100.79 67.62 97.83 67.82 94.12 C 68.34 89.56 69.10 84.87 70.86 80.62 C 73.83 73.32 78.84 66.62 83.44 60.26 C 86.87 55.52 94.43 51.63 100.15 54.08 Z"/>
         <path d="M 165.23 56.71 C 165.05 60.36 166.11 62.93 167.41 66.23 C 167.53 69.88 167.48 73.71 167.32 77.36 C 165.96 79.94 162.96 81.08 160.51 82.34 C 161.67 80.29 162.95 78.32 164.25 76.36 C 163.53 74.81 162.43 73.09 162.28 71.36 C 163.21 70.00 164.42 68.79 165.54 67.58 C 164.55 66.26 163.44 64.95 162.67 63.49 C 162.44 61.95 162.44 60.31 162.75 58.78 C 163.15 57.83 164.44 57.33 165.23 56.71 Z"/>

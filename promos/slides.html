@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<!-- handmade: hand-tuned deck -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bouncer — Plugin Store promos</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #120b16;
+    --ink-light: #1c1122;
+    --ink-lighter: #2b1a34;
+    --accent: #6B3A80;
+    --accent-light: #A87BC4;
+    --brass: #DBB877;
+    --green: #4ade80;
+    --off-white: #f4f0f6;
+  }
+
+  html { background: #000; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--off-white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- slide shell ---------------------------------------------------- */
+  .slide {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 85% 15%, rgba(107, 58, 128, 0.30) 0%, transparent 40%),
+      radial-gradient(ellipse at 65% 5%,  rgba(168, 123, 196, 0.13) 0%, transparent 35%),
+      radial-gradient(ellipse at 15% 85%, rgba(219, 184, 119, 0.07) 0%, transparent 40%),
+      radial-gradient(ellipse at 35% 95%, rgba(107, 58, 128, 0.10) 0%, transparent 35%),
+      linear-gradient(135deg, #120b16 0%, #1a1020 30%, #22142a 60%, #120b16 100%);
+  }
+
+  /* Oversized watermark, echoing the app icon.
+
+     Two corrections off the first render, both because this mark is a filled silhouette and a
+     dense one. At 1150px and left -8% the figure sat behind the headline column and read as a
+     grey man standing on every slide; Bird's crop — 980px at left -20% — pushes him off the
+     edge so only a shoulder and the rope carry. And 0.022, which is already the reduced figure
+     the family uses for filled marks, was still too strong for a shape with this much mass in
+     it: 0.016. Compare Bird's cover, where the mark is genuinely subliminal. */
+  .slide::after {
+    content: '';
+    position: absolute;
+    top: -4%;
+    left: -20%;
+    width: 980px;
+    height: 980px;
+    background: url('assets/watermark.svg') no-repeat center / contain;
+    opacity: 0.016;
+    pointer-events: none;
+  }
+
+  /* Hairline along the top edge */
+  .slide::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--brass), var(--accent));
+    z-index: 5;
+  }
+
+  .inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 118px 130px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* ---- type ------------------------------------------------------------ */
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(244, 240, 246, 0.62);
+    margin-bottom: 34px;
+  }
+  .eyebrow .rule {
+    width: 58px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--accent-light);
+  }
+
+  h1, h2 {
+    font-family: 'Jersey 20', sans-serif;
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: 0.005em;
+  }
+
+  .gradient-text {
+    background: linear-gradient(100deg, #6B3A80 0%, #A87BC4 38%, #DBB877 68%, #6B3A80 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .lede {
+    font-size: 34px;
+    line-height: 1.5;
+    color: rgba(244, 240, 246, 0.72);
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  /* ---- cover slide ----------------------------------------------------- */
+  .cover .inner { gap: 90px; }
+  .cover .copy { flex: 1 1 auto; }
+  .cover h1 { font-size: 210px; margin-bottom: 26px; }
+  .cover .tagline {
+    font-family: 'Jersey 20', sans-serif;
+    font-size: 60px;
+    line-height: 1.02;
+    color: var(--off-white);
+    margin-bottom: 40px;
+    max-width: 15ch;
+  }
+  .cover .lede { max-width: 27ch; font-size: 30px; }
+
+  .cover .mark {
+    flex: 0 0 auto;
+    width: 460px;
+    height: 460px;
+    filter: drop-shadow(14px 14px 0 rgba(0, 0, 0, 0.35));
+  }
+  .cover .mark img { width: 100%; height: 100%; display: block; }
+
+  .badges { display: flex; gap: 16px; margin-top: 52px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 26px;
+    font-size: 22px;
+    font-weight: 500;
+    color: rgba(244, 240, 246, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+  }
+  .badge .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent-light);
+  }
+  .badge.price .dot { background: var(--brass); }
+
+  /* ---- the before/after statement -------------------------------------- */
+  .statement .inner { flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .statement .eyebrow { justify-content: center; }
+  .swap { display: flex; flex-direction: column; align-items: center; gap: 22px; margin-top: 8px; }
+  .swap .caption {
+    font-size: 26px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(244, 240, 246, 0.42);
+  }
+  .swap .before {
+    font-size: 46px;
+    white-space: nowrap;
+    color: rgba(244, 240, 246, 0.34);
+    letter-spacing: 0.01em;
+  }
+  .swap .arrow {
+    width: 4px;
+    height: 62px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(168,123,196,0.15), var(--accent-light));
+    position: relative;
+  }
+  .swap .arrow::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: -4px;
+    width: 18px; height: 18px;
+    transform: translateX(-50%) rotate(45deg);
+    border-right: 4px solid var(--accent-light);
+    border-bottom: 4px solid var(--accent-light);
+    border-radius: 2px;
+  }
+  .swap .after {
+    font-size: 82px;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .statement .lede { margin-top: 40px; max-width: 40ch; font-size: 32px; }
+
+  /* ---- feature slides -------------------------------------------------- */
+  .feature .inner { align-items: center; }
+  .feature .copy { width: 780px; flex: 0 0 780px; }
+  .feature h2 { font-size: 108px; margin-bottom: 30px; }
+  .feature .lede { max-width: 21ch; }
+
+  .points {
+    list-style: none;
+    margin-top: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 25px;
+    line-height: 1.4;
+    color: rgba(244, 240, 246, 0.6);
+  }
+  .points li .tick {
+    flex: 0 0 auto;
+    margin-top: 9px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent-light);
+  }
+  /* The li is a flex container, so an inline <span class="mono"> or <em> left loose in the
+     text becomes a sibling flex item and picks up the 16px gap on both sides. Every point
+     keeps its text in one .t. Keep each point to one line — about 55 characters at 25px in
+     a 780px column. A second line runs at the panel, which starts at left: 900px, and the
+     two simply overlap. */
+  .points li .t { flex: 1 1 auto; }
+
+  /* Right-hand panel shared by the doors, rule, file-route and audit slides */
+  .panel {
+    position: absolute;
+    top: 50%;
+    left: 900px;
+    right: 130px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* ---- the four enforcement points ------------------------------------- */
+  .places { display: flex; flex-wrap: wrap; gap: 22px; }
+  .place {
+    flex: 1 1 calc(50% - 11px);
+    padding: 36px 34px;
+    border-radius: 18px;
+    background: rgba(43, 26, 52, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .place .where {
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--off-white);
+    margin-bottom: 14px;
+  }
+  .place .what { font-size: 22px; line-height: 1.45; color: rgba(244, 240, 246, 0.5); }
+  .place .chip {
+    display: inline-block;
+    margin-bottom: 18px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 18px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    background: rgba(107, 58, 128, 0.28);
+  }
+
+  /* ---- the three parts of a rule --------------------------------------- */
+  .parts { display: flex; flex-direction: column; gap: 20px; }
+  .part {
+    padding: 28px 34px;
+    border-radius: 16px;
+    background: rgba(43, 26, 52, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .part .label {
+    font-size: 19px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 14px;
+  }
+  .part .said { font-size: 30px; color: var(--off-white); margin-bottom: 10px; }
+  .part .said b { color: var(--brass); font-weight: 400; }
+  .part .also { font-size: 21px; line-height: 1.45; color: rgba(244, 240, 246, 0.42); }
+
+  /* ---- the file route, step by step ------------------------------------ */
+  .steps { display: flex; flex-direction: column; gap: 16px; }
+  .step {
+    display: flex;
+    align-items: baseline;
+    gap: 26px;
+    padding: 26px 34px;
+    border-radius: 14px;
+    background: rgba(43, 26, 52, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .step .n {
+    flex: 0 0 46px;
+    font-size: 30px;
+    color: var(--brass);
+  }
+  .step .t { flex: 1 1 auto; font-size: 25px; line-height: 1.4; color: rgba(244, 240, 246, 0.72); }
+  .step .t b { color: var(--off-white); font-weight: 600; }
+
+  /* ---- exposure findings ------------------------------------------------ */
+  .finds { display: flex; flex-direction: column; gap: 16px; }
+  .find {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    padding: 26px 34px;
+    border-radius: 16px;
+    background: rgba(43, 26, 52, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  /* 250px, not 210 — "Member downloads" wrapped to two lines at 210 and pushed its row taller
+     than the four around it. */
+  .find .vol { flex: 0 0 250px; font-size: 25px; color: var(--brass); letter-spacing: 0.02em; }
+  .find .what { flex: 1 1 auto; font-size: 24px; color: rgba(244, 240, 246, 0.66); }
+  .find .sev {
+    flex: 0 0 auto;
+    font-size: 19px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+  /* Severity is carried by colour, never by a border style — a dashed 1px border does not
+     survive the downsample from 3840 to 1920. */
+  .find.bad { border-color: rgba(168, 123, 196, 0.55); background: rgba(107, 58, 128, 0.20); }
+  .find.bad .what { color: var(--off-white); }
+  .find.bad .sev { color: #ff8f7e; }
+  .find.warn .sev { color: var(--brass); }
+
+  /* ---- terminal --------------------------------------------------------- */
+  .term {
+    position: absolute;
+    top: 50%;
+    left: 900px;
+    right: -110px;
+    transform: translateY(-50%);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .term .chrome {
+    height: 44px;
+    background: #2b1a34;
+    background-image:
+      radial-gradient(circle at 26px 22px, #ff5f57 6.5px, transparent 7px),
+      radial-gradient(circle at 52px 22px, #ffbd2e 6.5px, transparent 7px),
+      radial-gradient(circle at 78px 22px, #28ca42 6.5px, transparent 7px);
+  }
+  .term .body {
+    background: #150d1a;
+    padding: 42px 44px;
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 24px;
+    line-height: 1.95;
+  }
+  .term .prompt { color: var(--accent-light); }
+  .term .cmd { color: var(--off-white); }
+  .term .out { color: rgba(244, 240, 246, 0.45); }
+  .term .ok { color: var(--green); }
+  .term .warn { color: var(--brass); }
+  .term .err { color: #ff8f7e; }
+  .term .blank { display: block; height: 20px; }
+
+  /* ---- footer lockup --------------------------------------------------- */
+  .footer {
+    position: absolute;
+    left: 130px;
+    bottom: 62px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: rgba(244, 240, 246, 0.4);
+  }
+  .footer img { width: 40px; height: 40px; border-radius: 9px; }
+  .footer b { color: rgba(244, 240, 246, 0.72); font-weight: 600; }
+
+  /* Only render the requested slide when screenshotting */
+  body.single .slide { display: none; }
+  body.single .slide.active { display: block; }
+
+  /* ---- control-panel screenshot cards -------------------------------
+     Self-contained: these cards must drop into any deck in the family, and the decks
+     do not share a class system. Only --accent and --off-white are relied on, both of
+     which every deck defines, and both have fallbacks. */
+  .slide.cpcard { display: block; }
+  .cpcard .cpc-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 112px 120px;
+    display: flex;
+    align-items: center;
+    gap: 70px;
+  }
+  .cpcard .cpc-copy { width: 660px; flex: 0 0 660px; }
+
+  .cpcard .cpc-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 34px;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent-light, #7aa2c8);
+  }
+  .cpcard .cpc-eyebrow i {
+    display: block;
+    width: 62px;
+    height: 3px;
+    background: var(--accent-light, #7aa2c8);
+    border-radius: 2px;
+  }
+
+  .cpcard .cpc-h2 {
+    font-family: 'Jersey 20', 'Inter', sans-serif;
+    font-size: 88px;
+    line-height: 0.96;
+    font-weight: 400;
+    letter-spacing: 0.005em;
+    margin: 0 0 28px;
+    color: var(--off-white, #f0f0f5);
+  }
+
+  .cpcard .cpc-lede {
+    font-size: 33px;
+    line-height: 1.42;
+    color: rgba(244, 240, 246, 0.66);
+    margin: 0;
+  }
+
+  .cpcard .cpc-points { list-style: none; margin: 40px 0 0; padding: 0; }
+  .cpcard .cpc-points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 26px;
+    line-height: 1.5;
+    color: rgba(244, 240, 246, 0.72);
+    margin-bottom: 18px;
+  }
+  .cpcard .cpc-points li::before {
+    content: '';
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    margin-top: 14px;
+    border-radius: 50%;
+    background: var(--accent-light, #7aa2c8);
+  }
+
+  .cpcard .cpc-panel { flex: 1 1 auto; min-width: 0; }
+
+  .cpcard .cpc-frame {
+    border-radius: 14px;
+    overflow: hidden;
+    background: #e4edf6;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55), 0 6px 18px rgba(0, 0, 0, 0.35);
+  }
+  .cpcard .cpc-chrome {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 18px;
+    background: linear-gradient(180deg, #2a2a3d 0%, #21212f 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+  }
+  .cpcard .cpc-chrome b { width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,0.16); }
+  .cpcard .cpc-chrome b:nth-child(1) { background: #ff5f57; }
+  .cpcard .cpc-chrome b:nth-child(2) { background: #febc2e; }
+  .cpcard .cpc-chrome b:nth-child(3) { background: #28c840; }
+  .cpcard .cpc-chrome em {
+    margin-left: 12px;
+    font-style: normal;
+    font-size: 19px;
+    letter-spacing: 0.02em;
+    color: rgba(244, 240, 246, 0.45);
+  }
+  .cpcard .cpc-frame img { display: block; width: 100%; height: auto; }
+
+  /* A tall capture is anchored to its top — the interesting rows are always first.
+     The fade makes the cut read as "there is more" rather than as a broken edge.
+     Neither of Bouncer's two captures needs it: at the 950px the panel gives them they
+     come out 335px and 540px tall. Kept because the next screenshot might. */
+  .cpcard .cpc-frame.cpc-clip { max-height: 620px; position: relative; }
+  .cpcard .cpc-frame.cpc-clip img { object-fit: cover; object-position: top center; max-height: 580px; }
+  .cpcard .cpc-frame.cpc-clip::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 130px;
+    background: linear-gradient(180deg, rgba(228,237,246,0) 0%, rgba(228,237,246,0.92) 78%, #e4edf6 100%);
+  }
+
+  .cpcard .cpc-caption {
+    display: block;
+    margin-top: 20px;
+    font-size: 22px;
+    line-height: 1.45;
+    color: rgba(244, 240, 246, 0.52);
+  }
+  .cpcard .cpc-caption b { color: rgba(244, 240, 246, 0.80); font-weight: 600; }
+
+</style>
+</head>
+<body>
+
+<!-- 1 · Cover ============================================================ -->
+<section class="slide cover" data-n="1">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Craft CMS 5</div>
+      <h1 class="gradient-text">Bouncer</h1>
+      <p class="tagline">Who may see what. In one&nbsp;place.</p>
+      <p class="lede">Sections, entries, categories, front-end URIs — and the asset files that every
+        other access plugin leaves sitting at their original URL.</p>
+      <div class="badges">
+        <span class="badge price"><span class="dot"></span> Lite free &nbsp;·&nbsp; Pro $59</span>
+        <span class="badge">Craft 5.3+ · PHP 8.2+ · no build step</span>
+      </div>
+    </div>
+    <div class="mark"><img src="assets/icon.svg" alt=""></div>
+  </div>
+</section>
+
+<!-- 2 · The half everyone skips ========================================== -->
+<section class="slide statement" data-n="2">
+  <div class="inner">
+    <div class="eyebrow"><span class="rule"></span> The whole idea</div>
+    <div class="swap">
+      <span class="caption">What element-only gating leaves behind</span>
+      <span class="before mono">/uploads/2026/pricing.pdf &nbsp;→&nbsp; 200 OK</span>
+      <span class="arrow"></span>
+      <span class="caption">What a protected asset returns instead</span>
+      <span class="after mono gradient-text">/bouncer/file/…/pricing.pdf</span>
+    </div>
+    <p class="lede">The entry 403s and the PDF still downloads. Bouncer rewrites the URL, transform
+      and all, and re-checks access on every hit — the URL itself is never the authority.</p>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<!-- 3 · One verdict, four doors ========================================== -->
+<section class="slide feature" data-n="3">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Where it is enforced</div>
+      <h2>One verdict.<br>Four doors</h2>
+      <p class="lede">Content leaks from four places, so all four ask the same question of the same
+        service.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">Every door asks one service. Nothing else decides</span></li>
+        <li><span class="tick"></span><span class="t">A gated entry still listed by title is theatre</span></li>
+        <li><span class="tick"></span><span class="t">Previews, share tokens and the CP are never guarded</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="places">
+      <div class="place">
+        <span class="chip">The page</span>
+        <div class="where">Request guard</div>
+        <div class="what">Hooks the first controller action, so it already knows which entry the URL resolved to.</div>
+      </div>
+      <div class="place">
+        <span class="chip">The listing</span>
+        <div class="where">Query filter</div>
+        <div class="what">Indexes, search, feeds, sitemaps and GraphQL are all element queries. One hook covers the lot.</div>
+      </div>
+      <div class="place">
+        <span class="chip">The bytes</span>
+        <div class="where">File route</div>
+        <div class="what">A protected asset's URL is rewritten to a guarded route that re-checks on every request.</div>
+      </div>
+      <div class="place">
+        <span class="chip">Part of a page</span>
+        <div class="where">Twig API</div>
+        <div class="what">Teasers and paywalls: gate a section of the template without gating the page around it.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<!-- 4 · What a rule is =================================================== -->
+<section class="slide feature" data-n="4">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> What a rule is</div>
+      <h2>Reads like<br>a sentence</h2>
+      <p class="lede">This content, for these people, otherwise that. Top to bottom, in that
+        order.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">In project config, so they deploy with the sections</span></li>
+        <li><span class="tick"></span><span class="t">Every rule targeting an element must pass. AND, not OR</span></li>
+        <li><span class="tick"></span><span class="t">Adding a rule can only remove access, never grant it</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="parts">
+      <div class="part">
+        <div class="label">Target</div>
+        <div class="said">Entries in <b>Members</b>, type <b>Article</b></div>
+        <div class="also">Or categories, or a volume, or a URI pattern. Narrowed by Craft's own condition builder.</div>
+      </div>
+      <div class="part">
+        <div class="label">Access</div>
+        <div class="said">for <b>Subscribers</b> or <b>Staff</b></div>
+        <div class="also">Logged in · groups, any or all · permissions · a shared password · a date window · IP lists.</div>
+      </div>
+      <div class="part">
+        <div class="label">Response</div>
+        <div class="said">otherwise <b>render the paywall</b></div>
+        <div class="also">Or send to login, redirect, ask for the password, 403, or 404. First denying rule wins.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<!-- 5 · The file half ==================================================== -->
+<section class="slide feature" data-n="5">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Protecting files &nbsp;·&nbsp; Pro</div>
+      <h2>The bytes,<br>not just<br>the title</h2>
+      <p class="lede">The half that is usually skipped, and the reason the plugin exists.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">Transforms generated outside the public filesystem</span></li>
+        <li><span class="tick"></span><span class="t">Range and If-None-Match answered properly. Video seeks</span></li>
+        <li><span class="tick"></span><span class="t">Signed, expiring links for somebody with no account</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="steps">
+      <div class="step"><span class="n mono">1</span><span class="t"><b>The URL is rewritten.</b> <span class="mono">getUrl()</span> returns the guarded route. No template changes anywhere.</span></div>
+      <div class="step"><span class="n mono">2</span><span class="t"><b>Every hit is re-checked.</b> The URL ends up in HTML, caches, history and referrers.</span></div>
+      <div class="step"><span class="n mono">3</span><span class="t"><b>Transforms go to runtime.</b> The volume's transform filesystem is public on most sites.</span></div>
+      <div class="step"><span class="n mono">4</span><span class="t"><b>Big files hand off.</b> <span class="mono">X-Accel-Redirect</span> or <span class="mono">X-Sendfile</span>, if the server offers it.</span></div>
+      <div class="step"><span class="n mono">5</span><span class="t"><b>Or sign a link.</b> HMAC over the asset, transform and expiry. Stateless.</span></div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<!-- 6 · The exposure audit =============================================== -->
+<section class="slide feature" data-n="6">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> The exposure audit</div>
+      <h2>Rewriting<br>a URL is<br>not sealing<br>a file</h2>
+      <p class="lede">Nothing the plugin does can stop a web server serving a file it can see.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">Every volume a rule protects, checked for public URLs</span></li>
+        <li><span class="tick"></span><span class="t">Local roots inside the web root, served regardless</span></li>
+        <li><span class="tick"></span><span class="t">Hands over the exact .htaccess or nginx block</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="finds">
+      <div class="find bad"><span class="vol mono">Contracts</span><span class="what">Local root inside the web root</span><span class="sev">Critical</span></div>
+      <div class="find bad"><span class="vol mono">Contracts</span><span class="what">Filesystem still has public URLs</span><span class="sev">Critical</span></div>
+      <div class="find warn"><span class="vol mono">Member downloads</span><span class="what">Transform filesystem is public</span><span class="sev">Warning</span></div>
+      <div class="find"><span class="vol mono">Course video</span><span class="what">Private filesystem, no base URL</span><span class="sev">Sealed</span></div>
+      <div class="find"><span class="vol mono">Invoices</span><span class="what">Private filesystem, no base URL</span><span class="sev">Sealed</span></div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<!-- 7 · Prove it before you ship ========================================= -->
+<section class="slide feature" data-n="7">
+  <div class="inner">
+    <div class="copy">
+      <div class="eyebrow"><span class="rule"></span> Templates &amp; console</div>
+      <h2>Prove it<br>before<br>you ship</h2>
+      <p class="lede">Does an anonymous visitor still get the members index? Ask, in the deploy
+        check.</p>
+      <ul class="points">
+        <li><span class="tick"></span><span class="t">audit exits non-zero, so CI can hold the release</span></li>
+        <li><span class="tick"></span><span class="t">rules/test answers the question you have on deploy day</span></li>
+        <li><span class="tick"></span><span class="t">craft.bouncer.can() gates part of a page, not the page</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="term">
+    <div class="chrome"></div>
+    <div class="body">
+      <div><span class="prompt">$</span> <span class="cmd">php craft bouncer/rules/test /members/handbook</span></div>
+      <div class="out">&nbsp;&nbsp;anonymous &nbsp;&nbsp;<span class="err">DENIED</span> &nbsp;&nbsp;members-only &nbsp;·&nbsp; not logged in</div>
+      <div class="out">&nbsp;&nbsp;--user-id=5 &nbsp;<span class="ok">ALLOWED</span> &nbsp;&nbsp;in group Subscribers</div>
+      <span class="blank"></span>
+      <div><span class="prompt">$</span> <span class="cmd">php craft bouncer/audit</span></div>
+      <div class="out"><span class="ok">OK</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6 rules, all evaluable on this edition</div>
+      <div class="out"><span class="err">EXPOSED</span> Contracts — local root under the web root</div>
+      <div class="out">&nbsp;&nbsp;<span class="warn">run</span> bouncer/audit/snippets nginx</div>
+      <div class="out">exit 1</div>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<!-- 8 · control-panel screenshot ============================== -->
+<section class="slide cpcard" data-n="8">
+  <div class="cpc-inner">
+    <div class="cpc-copy">
+      <div class="cpc-eyebrow"><i></i> In the control panel</div>
+      <h2 class="cpc-h2">Every rule,<br>in order</h2>
+      <p class="cpc-lede">What is protected, who gets through, and what a refused visitor sees.</p>
+    </div>
+    <div class="cpc-panel">
+      <figure class="cpc-frame">
+        <div class="cpc-chrome"><b></b><b></b><b></b><em>Bouncer access rules</em></div>
+        <img src="shots/bouncer-rules.png" alt="">
+      </figure>
+      <span class="cpc-caption">The Bouncer rules screen listing each access rule with its target, the groups that satisfy it, and the response a refused visitor gets</span>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<!-- 9 · control-panel screenshot ============================== -->
+<section class="slide cpcard" data-n="9">
+  <div class="cpc-inner">
+    <div class="cpc-copy">
+      <div class="cpc-eyebrow"><i></i> In the control panel</div>
+      <h2 class="cpc-h2">And whether<br>it is sealed</h2>
+      <p class="cpc-lede">Every volume a rule protects, checked against the filesystem underneath it.</p>
+    </div>
+    <div class="cpc-panel">
+      <figure class="cpc-frame">
+        <div class="cpc-chrome"><b></b><b></b><b></b><em>Bouncer file exposure</em></div>
+        <img src="shots/bouncer-exposure.png" alt="">
+      </figure>
+      <span class="cpc-caption">The Bouncer exposure audit reporting each protected volume's filesystem, its severity, and the server block that would seal it</span>
+    </div>
+  </div>
+  <div class="footer"><img src="assets/icon.svg" alt=""> <b>Bouncer</b> &nbsp;·&nbsp; justinholt.com/plugins/craft-bouncer</div>
+</section>
+
+<script>
+  var n = new URLSearchParams(location.search).get('s');
+  if (n) {
+    document.body.classList.add('single');
+    var el = document.querySelector('.slide[data-n="' + n + '"]');
+    if (el) el.classList.add('active');
+  }
+</script>
+</body>
+</html>

@@ -145,6 +145,8 @@ non-password response; the query filter; the Twig API.
 **Pro** — asset protection and the whole file-delivery half; password gating; date windows; IP
 rules; the element condition builder; the access log; the console commands.
 
+Pro is **$59**, with a $29 annual renewal for updates. Lite is free and stays free.
+
 **On a lapsed licence, Bouncer fails closed.** Pro-only conditions are not evaluated on Lite, and a
 rule left with nothing evaluable **denies everybody**. A licence lapse that silently opened a
 members area would be worse than one that locked it, so the control panel names every affected rule
