@@ -5,10 +5,16 @@
 {% set fullPageForm = false %}
 
 {% block actionButton %}
-    <a href="{{ url('bouncer/rules/new') }}" class="btn submit add icon">{{ "New rule"|t('bouncer') }}</a>
+    {% if not readOnly %}
+        <a href="{{ url('bouncer/rules/new') }}" class="btn submit add icon">{{ "New rule"|t('bouncer') }}</a>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
+    {% if readOnly %}
+        {% include 'bouncer/rules/_readonly' %}
+    {% endif %}
+
     {% if unevaluable|length %}
         <blockquote class="note warning">
             <p>
@@ -62,7 +68,9 @@
                         </td>
                         <td>{{ rule.response.type }}</td>
                         <td class="thin">
-                            <button type="button" class="delete icon bouncer-delete" title="{{ 'Delete'|t('app') }}" data-id="{{ rule.id }}"></button>
+                            {% if not readOnly %}
+                                <button type="button" class="delete icon bouncer-delete" title="{{ 'Delete'|t('app') }}" aria-label="{{ 'Delete “{name}”'|t('bouncer', { name: rule.name }) }}" data-id="{{ rule.id }}"></button>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -71,11 +79,14 @@
     {% else %}
         <div class="zilch">
             <p>{{ "No access rules yet. Everything on this site is public."|t('bouncer') }}</p>
-            <a href="{{ url('bouncer/rules/new') }}" class="btn submit">{{ "Create the first rule"|t('bouncer') }}</a>
+            {% if not readOnly %}
+                <a href="{{ url('bouncer/rules/new') }}" class="btn submit">{{ "Create the first rule"|t('bouncer') }}</a>
+            {% endif %}
         </div>
     {% endif %}
 {% endblock %}
 
+{% if not readOnly %}
 {% js %}
 // A nested <form> in a CP template does not just fail — it corrupts the page form, so the delete
 // posts over Ajax instead. See the family notes in CLAUDE.md.
@@ -99,3 +110,4 @@ document.querySelectorAll('.bouncer-delete').forEach(function(button) {
     });
 });
 {% endjs %}
+{% endif %}

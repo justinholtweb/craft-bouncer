@@ -8,7 +8,6 @@ use Craft;
 use craft\base\Component;
 use craft\base\LocalFsInterface;
 use craft\elements\Asset;
-use craft\errors\ImageTransformException;
 use craft\helpers\FileHelper;
 use craft\helpers\ImageTransforms;
 use craft\models\ImageTransform;
@@ -103,7 +102,7 @@ class Files extends Component
 
         try {
             $tempPath = ImageTransforms::generateTransform($asset, $transform);
-        } catch (ImageTransformException | Throwable $e) {
+        } catch (Throwable $e) {
             Craft::warning("Could not generate a protected transform for asset {$asset->id}: {$e->getMessage()}", Plugin::LOG_CATEGORY);
 
             return null;

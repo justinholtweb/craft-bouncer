@@ -1,7 +1,7 @@
 {
     "name": "justinholtweb/craft-bouncer",
     "description": "Access rules for Craft CMS — protect sections, entries, categories, URIs and asset files behind login, user groups, permissions, passwords, date windows and IP rules, with a guarded file delivery route so protected uploads cannot be fetched directly.",
-    "version": "5.0.0",
+    "version": "5.0.1",
     "type": "craft-plugin",
     "keywords": [
         "craftcms",
@@ -60,5 +60,10 @@
         "changelogUrl": "https://raw.githubusercontent.com/justinholtweb/craft-bouncer/main/CHANGELOG.md",
         "class": "justinholtweb\\bouncer\\Plugin",
         "editions": ["lite", "pro"]
+    },
+    "require-dev": {
+        "craftcms/ecs": "dev-main",
+        "craftcms/phpstan": "dev-main",
+        "phpstan/phpstan": "^1.12 || ^2.2"
     }
 }

@@ -21,4 +21,6 @@ return [
     'That password is not right.' => 'That password is not right.',
     'Too many attempts. Try again later.' => 'Too many attempts. Try again later.',
     'Unlocked.' => 'Unlocked.',
+    'Access rules are project config, and admin changes are turned off on this environment. Change them where admin changes are allowed and deploy the project config.' => 'Access rules are project config, and admin changes are turned off on this environment. Change them where admin changes are allowed and deploy the project config.',
+    'Delete “{name}”' => 'Delete “{name}”',
 ];

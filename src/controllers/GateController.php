@@ -69,7 +69,7 @@ class GateController extends Controller
         return $this->redirectBack();
     }
 
-    private function redirectBack(): ?Response
+    private function redirectBack(): Response
     {
         // Craft only honours a redirect input that was hashed with the site's security key, so a
         // hand-written form cannot send visitors off-site. The referrer fallback is

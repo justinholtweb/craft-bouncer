@@ -95,9 +95,13 @@ No local PHP on this Mac. Everything runs inside the plugin-testing container:
 
 ```sh
 docker exec -w /var/www/html ddev-plugin-testing-web php /var/www/craft-bouncer/tests/integration/checks.php   # 104 checks
+docker exec -w /var/www/html ddev-plugin-testing-web php /var/www/craft-bouncer/tests/integration/security.php # 5, admin-only nav + read-only rules with admin changes off (flips CRAFT_ALLOW_ADMIN_CHANGES in the harness .env briefly)
+docker exec -w /sites/craft-bouncer ddev-phpstan-runner-web bash -c 'vendor/bin/phpstan analyse --memory-limit=1G && vendor/bin/ecs check'
 docker exec ddev-plugin-testing-web bash -c 'find /var/www/craft-bouncer/src -name "*.php" -print0 | xargs -0 -n1 php -l'
 docker exec -w /var/www/html ddev-plugin-testing-web php /var/www/craft-bouncer/tests/manual/seed-demo.php
 bash tests/manual/http-probe.sh                                                                                # 31 checks
+# if the DDEV router has lost the harness route (404 for everything), run the probe inside the container instead:
+docker exec ddev-plugin-testing-web bash /var/www/craft-bouncer/tests/manual/http-probe.sh http://localhost
 ```
 
 `tests/manual/seed-demo.php --clean` removes the demo. The demo also needs these harness templates,

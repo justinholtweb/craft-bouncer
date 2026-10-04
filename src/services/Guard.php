@@ -84,7 +84,7 @@ class Guard extends Component
         // the password form is rendered *at* the protected URL, so guarding it would loop.
         $controller = $event->action->controller;
 
-        if (str_starts_with($controller->module?->id ?? '', 'bouncer') || $controller->id === 'bouncer') {
+        if (str_starts_with((string)$controller->module->id, 'bouncer') || $controller->id === 'bouncer') {
             return false;
         }
 

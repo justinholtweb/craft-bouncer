@@ -10,16 +10,16 @@ use craft\base\Plugin as BasePlugin;
 use craft\db\Query as DbQuery;
 use craft\elements\Asset;
 use craft\elements\db\ElementQuery;
-use craft\events\DefineBehaviorsEvent;
 use craft\events\DefineAssetUrlEvent;
+use craft\events\DefineBehaviorsEvent;
 use craft\events\RebuildConfigEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Gc;
 use craft\services\ProjectConfig;
 use craft\services\UserPermissions;
-use craft\web\twig\variables\CraftVariable;
 use craft\web\Application;
+use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use justinholtweb\bouncer\behaviors\BouncerQueryBehavior;
 use justinholtweb\bouncer\models\Settings;
@@ -125,6 +125,12 @@ class Plugin extends BasePlugin
 
     public function getCpNavItem(): ?array
     {
+        // Every Bouncer screen is admin-only, so the nav is too. Before 5.0.1 anyone given access to
+        // the plugin saw it, and every page it led to answered 403.
+        if (!Craft::$app->getUser()->getIsAdmin()) {
+            return null;
+        }
+
         $item = parent::getCpNavItem();
         $item['label'] = Craft::t('bouncer', 'Bouncer');
 
@@ -147,12 +153,10 @@ class Plugin extends BasePlugin
             }
         }
 
-        if (Craft::$app->getUser()->getIsAdmin()) {
-            $item['subnav']['settings'] = [
-                'label' => Craft::t('bouncer', 'Settings'),
-                'url' => 'settings/plugins/bouncer',
-            ];
-        }
+        $item['subnav']['settings'] = [
+            'label' => Craft::t('bouncer', 'Settings'),
+            'url' => 'settings/plugins/bouncer',
+        ];
 
         return $item;
     }

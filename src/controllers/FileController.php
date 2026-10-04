@@ -42,7 +42,8 @@ class FileController extends Controller
         // `.bouncer(false)` matters: this asset is protected by definition — that is why the URL
         // points here — so the query filter would hide it from Bouncer's own lookup and the route
         // would answer 404 for every file it exists to serve.
-        $asset = Asset::find()->uid($uid)->status(null)->bouncer(false)->one();
+        // bouncer() comes from BouncerQueryBehavior, attached to every element query at runtime.
+        $asset = Asset::find()->uid($uid)->status(null)->bouncer(false)->one(); // @phpstan-ignore method.notFound
 
         if (!$asset instanceof Asset) {
             throw new NotFoundHttpException();
@@ -89,7 +90,7 @@ class FileController extends Controller
             throw new NotFoundHttpException();
         }
 
-        throw new ForbiddenHttpException($verdict->getResponse()?->message
+        throw new ForbiddenHttpException($verdict->getResponse()->message
             ?? Craft::t('bouncer', 'You do not have access to this file.'));
     }
 

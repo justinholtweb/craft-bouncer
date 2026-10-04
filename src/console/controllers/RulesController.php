@@ -84,7 +84,7 @@ class RulesController extends Controller
             $verdict = $plugin->access->checkUri($subject, $user);
         }
 
-        $who = $user?->username ?? 'an anonymous visitor';
+        $who = $user->username ?? 'an anonymous visitor';
 
         if ($verdict->allowed) {
             $suffix = $verdict->getIsProtected() ? ' (protected, and they pass)' : ' (nothing protects it)';

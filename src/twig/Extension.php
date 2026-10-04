@@ -50,7 +50,7 @@ class Extension extends AbstractExtension
      * For the cases the query filter cannot reach: an array assembled by hand, an eager-loaded
      * relation, the output of a plugin that returns elements rather than a query.
      *
-     * @param iterable<ElementInterface> $elements
+     * @param mixed $elements Whatever the template passes; anything not iterable gives nothing back.
      * @return ElementInterface[]
      */
     public function filterElements(mixed $elements): array

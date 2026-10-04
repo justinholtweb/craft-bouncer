@@ -2,6 +2,19 @@
 
 All notable changes to Bouncer are documented here.
 
+## 5.0.1 — 2026-10-04
+
+### Fixed
+- On an environment with admin changes turned off, admins could still save, delete and reorder
+  access rules. Rules are project config, so the next deploy reverted those changes, re-exposing
+  or locking content without anyone deciding to. The rules screens are now read-only there, with
+  a notice saying why: rules and the tester can still be read and used, but not changed.
+- Non-admins given access to the plugin saw the Bouncer nav item, though every page it led to
+  answered 403. The nav item is now shown to admins only, like the screens.
+- The permissions documentation described permissions for Bouncer's screens that don't exist. It
+  now says what is true: the screens are admin-only, and *Bypass all access rules* is Bouncer's
+  only permission.
+
 ## 5.0.0 — 2026-08-18
 
 Initial release. Numbered 5.0.0 to match the Craft version it targets, as the rest of this plugin

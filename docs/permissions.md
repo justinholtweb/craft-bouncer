@@ -9,13 +9,14 @@ Two kinds: who can change the rules, and who is not subject to them.
 
 ## Managing Bouncer
 
-Bouncer registers permissions for its own screens — the rules index, the exposure audit and the
-access log — so you can give a lead developer the rules and give nobody else them. They appear under
-**Settings → Users → User Groups** like any other plugin's.
+Bouncer's screens — the rules, the exposure audit and the access log — are for admins only. A rule
+changes who can read the site, so it isn't something to hand out as a plugin permission, and the
+Bouncer item only appears in the control panel nav for admins.
 
-Rules are project config, so on a site with `allowAdminChanges` off in production the rules screen
-is read-only there whatever the permission says. That is Craft's behaviour and it is the right one:
-production is not where an access rule should be authored.
+Rules are project config, so on a site with `allowAdminChanges` off in production the rules screens
+are read-only there: admins can read every rule and use the tester, but not add, change, reorder or
+delete one. Production is not where an access rule should be authored, and a change made there
+would be reverted by the next deploy.
 
 ## Bypass all access rules
 

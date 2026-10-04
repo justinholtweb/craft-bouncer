@@ -67,7 +67,7 @@ class RuleAccess extends Model
     public function __construct($config = [])
     {
         foreach (['startDate', 'endDate'] as $attr) {
-            if (isset($config[$attr]) && $config[$attr] !== '' && $config[$attr] !== null) {
+            if (isset($config[$attr]) && $config[$attr] !== '') {
                 $config[$attr] = DateTimeHelper::toDateTime($config[$attr]) ?: null;
             } else {
                 $config[$attr] = null;

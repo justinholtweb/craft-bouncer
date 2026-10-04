@@ -198,8 +198,8 @@ class QueryFilter extends Component
             $column = match ($target->type) {
                 RuleTarget::TYPE_ENTRIES => 'sectionId',
                 RuleTarget::TYPE_CATEGORIES => 'groupId',
-                RuleTarget::TYPE_ASSETS => 'volumeId',
-                default => 'id',
+                // Only assets are left: any other type returned early above.
+                default => 'volumeId',
             };
 
             $query->andWhere([$column => $sourceIds ?: [0]]);

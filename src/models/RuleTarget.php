@@ -12,7 +12,6 @@ use craft\elements\Category;
 use craft\elements\conditions\ElementConditionInterface;
 use craft\elements\Entry;
 use craft\helpers\StringHelper;
-use justinholtweb\bouncer\models\Edition;
 
 /**
  * *What* a rule protects.

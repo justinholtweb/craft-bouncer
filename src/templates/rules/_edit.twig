@@ -7,9 +7,13 @@
     { label: "Rules"|t('bouncer'), url: url('bouncer/rules') },
 ] %}
 
-{% set fullPageForm = true %}
+{% set fullPageForm = not readOnly %}
 
 {% block content %}
+    {% if readOnly %}
+        {% include 'bouncer/rules/_readonly' %}
+        <fieldset disabled class="bouncer-readonly">
+    {% endif %}
     <input type="hidden" name="action" value="bouncer/rules/save">
     <input type="hidden" name="ruleId" value="{{ rule.id }}">
     {{ redirectInput('bouncer/rules') }}
@@ -328,6 +332,9 @@
             values: rule.siteUids,
             showAllOption: false,
         }) }}
+    {% endif %}
+    {% if readOnly %}
+        </fieldset>
     {% endif %}
 {% endblock %}
 

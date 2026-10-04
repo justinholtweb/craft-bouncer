@@ -46,13 +46,28 @@ class RulesController extends Controller
             'rules' => Plugin::getInstance()->rules->getAllRules(),
             'unevaluable' => Plugin::getInstance()->rules->getUnevaluableRules(),
             'isPro' => Plugin::getInstance()->isPro(),
+            'readOnly' => !self::canChangeRules(),
         ]);
+    }
+
+    /**
+     * Rules are project config. Where admin changes are off they arrive by deploy, and a change made
+     * here would be reverted by the next one — re-exposing or locking content without anyone having
+     * decided to. Before 5.0.1 the screens let admins make that change anyway.
+     */
+    public static function canChangeRules(): bool
+    {
+        return Craft::$app->getConfig()->getGeneral()->allowAdminChanges;
     }
 
     public function actionEdit(?int $ruleId = null, ?AccessRule $rule = null): Response
     {
         $plugin = Plugin::getInstance();
         $isPro = $plugin->isPro();
+
+        if ($ruleId === null && $rule === null && !self::canChangeRules()) {
+            throw new ForbiddenHttpException('Access rules are project config, and admin changes are not allowed on this environment.');
+        }
 
         if ($rule === null) {
             $rule = $ruleId !== null ? $plugin->rules->getRuleById($ruleId) : new AccessRule();
@@ -74,12 +89,14 @@ class RulesController extends Controller
             'siteOptions' => $this->siteOptions(),
             'responseTypeOptions' => RuleResponse::typeOptions(),
             'condition' => $this->conditionFor($rule),
+            'readOnly' => !self::canChangeRules(),
         ]);
     }
 
     public function actionSave(): ?Response
     {
         $this->requirePostRequest();
+        $this->requireAdmin();
 
         $request = Craft::$app->getRequest();
         $plugin = Plugin::getInstance();
@@ -118,6 +135,7 @@ class RulesController extends Controller
     {
         $this->requirePostRequest();
         $this->requireAcceptsJson();
+        $this->requireAdmin();
 
         $id = (int)Craft::$app->getRequest()->getRequiredBodyParam('id');
 
@@ -128,6 +146,7 @@ class RulesController extends Controller
     {
         $this->requirePostRequest();
         $this->requireAcceptsJson();
+        $this->requireAdmin();
 
         $ids = Json::decode(Craft::$app->getRequest()->getRequiredBodyParam('ids'));
         $uids = [];

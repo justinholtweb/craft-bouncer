@@ -76,8 +76,8 @@ class Exposure extends Component
 
         $report->fsHandle = $volume->getFsHandle();
         $report->transformFsHandle = $volume->getTransformFsHandle();
-        $report->fsHasUrls = $fs?->hasUrls ?? false;
-        $report->transformFsHasUrls = $transformFs?->hasUrls ?? false;
+        $report->fsHasUrls = $fs->hasUrls ?? false;
+        $report->transformFsHasUrls = $transformFs->hasUrls ?? false;
 
         if ($fs === null) {
             $report->severity = VolumeExposure::SEVERITY_WARNING;
